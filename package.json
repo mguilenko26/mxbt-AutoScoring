@@ -1,0 +1,35 @@
+{
+  "name": "mxbt-autoscoring",
+  "version": "0.1.0",
+  "description": "MAX-бот: страхование двигателя и КПП с асинхронным скорингом",
+  "scripts": {
+    "mocks": "tsx mocks/server.ts",
+    "bot": "tsx --env-file-if-exists=.env src/main.ts",
+    "dev": "tsx --env-file-if-exists=.env scripts/dev.ts",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mguilenko26/mxbt-autoscoring.git"
+  },
+  "license": "UNLICENSED",
+  "bugs": {
+    "url": "https://github.com/mguilenko26/mxbt-autoscoring/issues"
+  },
+  "homepage": "https://github.com/mguilenko26/mxbt-autoscoring#readme",
+  "dependencies": {
+    "@maxhub/max-bot-api": "^1.0.2"
+  },
+  "devDependencies": {
+    "@types/node": "^22.20.5",
+    "tsx": "^4.23.15",
+    "typescript": "^5.9.3",
+    "vitest": "^5.0.5"
+  },
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=20.19"
+  }
+}
