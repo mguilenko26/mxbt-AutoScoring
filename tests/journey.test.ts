@@ -49,7 +49,7 @@ beforeAll(async () => {
     createHttpServices({ mocksBaseUrl: 'http://unused', paymentWebhookSecret: SECRET }).payments);
   const botPort = await listen(botHttp);
   mocks = createMockServer({
-    port: 0, publicUrl: 'http://mocks.local', paymentWebhookUrl: `http://localhost:${botPort}/payments/webhook`,
+    host: '127.0.0.1', port: 0, publicUrl: 'http://mocks.local', paymentWebhookUrl: `http://localhost:${botPort}/payments/webhook`,
     paymentWebhookSecret: SECRET, lookupDelayMs: 0, enrichDelayMs: 50, pricingDelayMs: 600, pricingSlowMs: 5000, log: false,
   });
   const mocksPort = await listen(mocks);

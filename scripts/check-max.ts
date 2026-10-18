@@ -17,15 +17,24 @@ try {
       subscriptions?: { url: string }[];
     };
     const urls = subs.subscriptions?.map((s) => s.url) ?? [];
-    console.log(urls.length
-      ? `⚠️ У бота настроен webhook: ${urls.join(', ')}\n   Для npm run dev (polling) его нужно удалить: npm run webhooks -- delete-all`
-      : '✅ Webhook-подписок нет — можно запускать npm run dev.');
+    if (process.env.MAX_MODE === 'webhook') {
+      const expected = `${(process.env.MAX_WEBHOOK_DOMAIN ?? '').replace(/\/+$/, '')}${process.env.MAX_WEBHOOK_PATH || '/max/webhook'}`;
+      console.log(urls.includes(expected)
+        ? `✅ Webhook зарегистрирован: ${expected}`
+        : `ℹ️ Webhook ${expected} будет зарегистрирован при запуске бота${urls.length ? ` (сейчас: ${urls.join(', ')})` : ''}.`);
+    } else {
+      console.log(urls.length
+        ? `⚠️ У бота настроен webhook: ${urls.join(', ')}\n   Для npm run dev (polling) его нужно удалить: npm run webhooks -- delete-all`
+        : '✅ Webhook-подписок нет — можно запускать npm run dev.');
+    }
   } else if (res.status === 401) {
     console.log(token
       ? '⚠️ Связь с MAX есть, но токен отклонён (401). Проверьте MAX_BOT_TOKEN в .env.'
       : '✅ Связь с MAX есть (TLS в порядке). Токен не задан — впишите MAX_BOT_TOKEN в .env.');
+    if (token) process.exitCode = 1;
   } else {
     console.log(`⚠️ MAX ответил ${res.status}: ${body.slice(0, 200)}`);
+    process.exitCode = 1;
   }
 } catch (e) {
   const cause = (e as { cause?: { code?: string; message?: string } }).cause;

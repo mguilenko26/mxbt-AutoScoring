@@ -78,6 +78,10 @@ cloudflared tunnel --url http://localhost:4000   # покажет адрес в�
 Без страницы можно обойтись: в чате есть кнопки **🧪 Оплата успешна / 🧪 Отказ банка**, они отключаются через `PAYMENT_SHORTCUTS=0`. В обоих случаях результат приходит в бот так же, как от настоящего эквайера: через подписанный webhook на `POST /payments/webhook`.
 
 
+## Установка на сервер
+
+Установка на Debian 12 (nginx с Let's Encrypt, systemd, режим webhook) выполняется одним скриптом `deploy/install.sh`, подробности в [docs/deploy.md](docs/deploy.md). Как работает webhook MAX, описано в [docs/max-web-hook.md](docs/max-web-hook.md).
+
 ## Устройство
 
 ```
@@ -108,7 +112,10 @@ mocks/
   server.ts               mock-сервер всех внешних сервисов
   fixtures.ts             тестовые автомобили и госномера
 tests/                    unit-тесты и сквозные сценарии с мессенджером-двойником
+deploy/                   install.sh, update.sh, systemd-юниты, конфиг nginx
 docs/customer-journey.md  клиентский путь и принятые решения
+docs/deploy.md            установка на сервер
+docs/max-web-hook.md      webhook MAX
 ```
 
 **Как подключить реальный сервис.** Нужно реализовать интерфейс из `src/services/ports.ts`, например `PlateToVinService` или `PaymentProvider`, и подставить его в `src/main.ts`. Логику бота менять не придётся. Чтобы сменить эквайера, достаточно написать новый адаптер `PaymentProvider` с методами `createPayment` и `parseWebhook` (проверка подписи).

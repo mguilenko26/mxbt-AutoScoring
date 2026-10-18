@@ -22,6 +22,8 @@ import type {
 import { MOCK_SIGNATURE_HEADER, signBody } from '../src/services/http.js';
 
 export interface MockOptions {
+  /** 127.0.0.1 в продакшене: наружу публикуется только страница оплаты /pay/ через nginx. */
+  host: string;
   port: number;
   /** Адрес mock-сервера, видимый пользователю (для ссылки на страницу оплаты). */
   publicUrl: string;
@@ -38,6 +40,7 @@ export interface MockOptions {
 export function optionsFromEnv(env = process.env): MockOptions {
   const port = Number(env.MOCKS_PORT ?? 4000);
   return {
+    host: env.MOCKS_HOST || '0.0.0.0',
     port,
     publicUrl: env.MOCKS_PUBLIC_URL ?? `http://localhost:${port}`,
     paymentWebhookUrl: env.PAYMENT_WEBHOOK_URL ?? `http://localhost:${env.BOT_HTTP_PORT ?? 3000}/payments/webhook`,
@@ -314,8 +317,12 @@ export function createMockServer(opts: MockOptions): Server {
 
 if (import.meta.url === pathToFileURL(process.argv[1] ?? '').href) {
   const opts = optionsFromEnv();
-  createMockServer(opts).listen(opts.port, () => {
-    console.log(`[mocks] listening on http://localhost:${opts.port} (public ${opts.publicUrl})`);
+  const server = createMockServer(opts);
+  server.listen(opts.port, opts.host, () => {
+    console.log(`[mocks] listening on http://${opts.host}:${opts.port} (public ${opts.publicUrl})`);
     console.log(`[mocks] payment webhooks → ${opts.paymentWebhookUrl}`);
   });
+  const stop = () => server.close(() => process.exit(0));
+  process.once('SIGTERM', stop);
+  process.once('SIGINT', stop);
 }

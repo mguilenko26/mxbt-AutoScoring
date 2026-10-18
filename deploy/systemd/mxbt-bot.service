@@ -1,0 +1,32 @@
+[Unit]
+Description=mxbt-AutoScoring: бот MAX (webhook)
+After=network-online.target mxbt-mocks.service
+Wants=network-online.target mxbt-mocks.service
+
+[Service]
+Type=simple
+User=mxbt
+Group=mxbt
+WorkingDirectory=__APP_DIR__
+EnvironmentFile=/etc/mxbt-autoscoring/env
+ExecStart=/usr/bin/node --import tsx src/main.ts
+Restart=always
+RestartSec=5
+# SIGTERM → бот закрывает HTTP-сервер; webhook-подписка в MAX сохраняется (MAX повторит доставку).
+TimeoutStopSec=15
+
+NoNewPrivileges=yes
+PrivateTmp=yes
+PrivateDevices=yes
+ProtectSystem=strict
+ProtectHome=yes
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectControlGroups=yes
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+RestrictNamespaces=yes
+LockPersonality=yes
+CapabilityBoundingSet=
+
+[Install]
+WantedBy=multi-user.target
