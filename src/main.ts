@@ -9,8 +9,10 @@ import { loadConfig, type AppConfig } from './config.js';
 import { createBotHttpServer } from './http.js';
 import { MaxMessenger, toInboundEvent } from './messenger/max.js';
 import { createHttpServices } from './services/http.js';
+import { installExtraCa } from './tls-ca.js';
 
 export async function startBot(cfg: AppConfig = loadConfig()) {
+  installExtraCa(); // сертификаты Минцифры из ca/ — до первого запроса к API MAX
   const bot = new Bot(cfg.maxBotToken);
   const services = createHttpServices({ mocksBaseUrl: cfg.mocksBaseUrl, paymentWebhookSecret: cfg.paymentWebhookSecret });
 

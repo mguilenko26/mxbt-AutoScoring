@@ -7,13 +7,24 @@
 
 ## Быстрый старт
 
-Нужны Node.js 20.19+ и токен бота MAX.
+Нужны Node.js 22.19+ и токен бота MAX.
 
 ```bash
 npm install
 cp .env.example .env      # впишите MAX_BOT_TOKEN
+npm run check:max         # проверка связи с API MAX: сертификаты и токен
 npm run dev               # mock-сервисы и бот в одном процессе, long polling
 ```
+
+На Windows в PowerShell используйте `npm.cmd` вместо `npm`, если выполнение скриптов отключено.
+
+### Сертификаты Минцифры
+
+API MAX (`platform-api2.max.ru`) подписан сертификатом **Russian Trusted Root CA**, а Node.js ему по умолчанию не доверяет: запросы падают с ошибкой `unable to get local issuer certificate`. Корневой и промежуточные сертификаты лежат в папке `ca/` и подключаются при старте автоматически (`src/tls-ca.ts`). Устанавливать их в систему или задавать `NODE_EXTRA_CA_CERTS` не нужно.
+
+- Свежие версии сертификатов публикуются на gosuslugi.ru/crt. Принимаются форматы PEM и DER с расширениями `.cer`, `.crt` и `.pem`.
+- Просроченные сертификаты пропускаются. За 60 дней до окончания срока в лог выводится предупреждение. `Russian Trusted Sub CA` (2022) действует до марта 2027 года.
+- Чтобы указать другой каталог, задайте `CA_DIR`.
 
 Затем откройте бота в MAX и нажмите «Начать» или отправьте `/start`.
 
@@ -53,6 +64,7 @@ npm run typecheck
 src/
   main.ts                 запуск: MAX (polling/webhook) + HTTP-сервер для webhook оплаты
   config.ts               переменные окружения
+  tls-ca.ts               подключение сертификатов Минцифры из ca/
   messenger/
     types.ts              порт мессенджера (события, кнопки, отправка и правка)
     max.ts                адаптер MAX на @maxhub/max-bot-api
@@ -68,6 +80,10 @@ src/
     ports.ts              контракты внешних сервисов
     http.ts               HTTP-клиенты к ним и mock-адаптер эквайера
   http.ts                 POST /payments/webhook, GET /health
+ca/                       корневой и промежуточные сертификаты Минцифры
+scripts/
+  dev.ts                  mock-сервисы и бот в одном процессе
+  check-max.ts            проверка связи с API MAX
 mocks/
   server.ts               mock-сервер всех внешних сервисов
   fixtures.ts             тестовые автомобили и госномера
