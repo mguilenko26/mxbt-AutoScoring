@@ -8,6 +8,7 @@ export type Button =
   | { type: 'callback'; text: string; payload: string }
   | { type: 'link'; text: string; url: string }
   | { type: 'request_contact'; text: string }
+  | { type: 'clipboard'; text: string; payload: string }
   | { type: 'open_app'; text: string; web_app: string; payload?: string };
 
 export interface OutgoingMessage {

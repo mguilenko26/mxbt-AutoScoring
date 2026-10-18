@@ -206,7 +206,9 @@ describe('клиентский путь', () => {
     await shareContact();
     await waitFor(() => messenger.messages.find((m) => m.msg.text.includes('Ваше предложение готово')));
     await press('За год');
-    expect(lastText()).toContain('Ссылка на оплату: http://mocks.local/pay/');
+    expect(lastText()).toMatch(/\[💳 Открыть страницу оплаты\]\(http:\/\/mocks\.local\/pay\/[\w-]+\)/);
+    const copy = messenger.last().msg.buttons!.flat().find((b) => b.type === 'clipboard');
+    expect(copy).toMatchObject({ type: 'clipboard', payload: expect.stringMatching(/^http:\/\/mocks\.local\/pay\//) });
   });
 
   it('неподписанный webhook оплаты отклоняется', async () => {

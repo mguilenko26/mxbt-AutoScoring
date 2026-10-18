@@ -541,8 +541,16 @@ export class InsuranceBot {
       await this.ask(s, T.payment(plan, amount), [[{ type: 'link', text: '💳 Перейти к оплате', url: res.payUrl }], ...sim, back], false);
     } catch (e) {
       // MAX может отклонить ссылку (например, localhost при локальном тесте) — отправляем адрес текстом.
-      this.log('warn', 'payment link button rejected, falling back to text link', e);
-      await this.ask(s, `${T.payment(plan, amount)}\n\nСсылка на оплату: ${res.payUrl}`, [...sim, back], false);
+      // Обычно это адрес localhost в dev-режиме: MAX не принимает такие ссылки в кнопках.
+      this.log('warn', `payment link button rejected for ${res.payUrl} — set MOCKS_PUBLIC_URL to a public HTTPS address (tunnel)`, e);
+      const copy: Button[] = [{ type: 'clipboard', text: '📋 Скопировать ссылку на оплату', payload: res.payUrl }];
+      try {
+        await this.ask(s, T.paymentFallback(plan, amount, res.payUrl), [copy, ...sim, back], false);
+      } catch (e2) {
+        // Последний вариант — адрес обычным текстом, без разметки ссылки и кнопки копирования.
+        this.log('warn', 'payment fallback message rejected, sending plain text', e2);
+        await this.ask(s, `${T.payment(plan, amount)}\n\nСсылка на оплату: ${res.payUrl}`, [...sim, back], false);
+      }
     }
   }
 
