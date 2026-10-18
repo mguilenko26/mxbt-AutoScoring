@@ -80,7 +80,7 @@ cloudflared tunnel --url http://localhost:4000   # покажет адрес в�
 
 ## Установка на сервер
 
-Установка на Debian 12 (nginx с Let's Encrypt, systemd, режим webhook) выполняется одним скриптом `deploy/install.sh`, подробности в [docs/deploy.md](docs/deploy.md). Как работает webhook MAX, описано в [docs/max-web-hook.md](docs/max-web-hook.md).
+Установка на Debian 12 (nginx с Let's Encrypt, systemd, режим webhook) выполняется одним скриптом `deploy/install.sh`. Краткая памятка лежит в [docs/install-quickstart.md](docs/install-quickstart.md), подробности в [docs/deploy.md](docs/deploy.md). Как работает webhook MAX, описано в [docs/max-web-hook.md](docs/max-web-hook.md).
 
 ## Устройство
 
@@ -114,7 +114,8 @@ mocks/
 tests/                    unit-тесты и сквозные сценарии с мессенджером-двойником
 deploy/                   install.sh, update.sh, systemd-юниты, конфиг nginx
 docs/customer-journey.md  клиентский путь и принятые решения
-docs/deploy.md            установка на сервер
+docs/install-quickstart.md  кратко: как установить на сервер
+docs/deploy.md            установка на сервер подробно
 docs/max-web-hook.md      webhook MAX
 ```
 
