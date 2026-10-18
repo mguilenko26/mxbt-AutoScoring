@@ -13,6 +13,13 @@ try {
   if (res.ok) {
     const me = JSON.parse(body) as { username?: string; user_id?: number };
     console.log(`✅ Связь с MAX есть, токен верный: бот @${me.username} (${me.user_id})`);
+    const subs = (await (await fetch(`${BASE}/subscriptions`, { headers: { Authorization: token! } })).json()) as {
+      subscriptions?: { url: string }[];
+    };
+    const urls = subs.subscriptions?.map((s) => s.url) ?? [];
+    console.log(urls.length
+      ? `⚠️ У бота настроен webhook: ${urls.join(', ')}\n   Для npm run dev (polling) его нужно удалить: npm run webhooks -- delete-all`
+      : '✅ Webhook-подписок нет — можно запускать npm run dev.');
   } else if (res.status === 401) {
     console.log(token
       ? '⚠️ Связь с MAX есть, но токен отклонён (401). Проверьте MAX_BOT_TOKEN в .env.'

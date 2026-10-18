@@ -4,6 +4,8 @@ export interface AppConfig {
   /** polling — для разработки; webhook — для продакшена (нужен публичный HTTPS). */
   maxMode: 'polling' | 'webhook';
   webhook?: { domain: string; port: number; path?: string; secret?: string };
+  /** polling: разрешить удалить существующие webhook-подписки бота. */
+  dropWebhooks: boolean;
   botHttpPort: number;
   mocksBaseUrl: string;
   paymentWebhookSecret: string;
@@ -33,6 +35,7 @@ export function loadConfig(env = process.env): AppConfig {
           secret: env.MAX_WEBHOOK_SECRET,
         }
       : undefined,
+    dropWebhooks: env.MAX_DROP_WEBHOOKS === '1',
     botHttpPort: Number(env.BOT_HTTP_PORT ?? 3000),
     mocksBaseUrl: env.MOCKS_BASE_URL ?? `http://localhost:${env.MOCKS_PORT ?? 4000}`,
     paymentWebhookSecret: env.PAYMENT_WEBHOOK_SECRET ?? 'mock-secret',

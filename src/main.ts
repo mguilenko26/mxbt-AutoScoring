@@ -45,6 +45,22 @@ export async function startBot(cfg: AppConfig = loadConfig()) {
   });
 
   const info = await bot.api.getMyInfo();
+
+  // В режиме polling библиотека MAX удаляет ВСЕ webhook-подписки бота. Не делаем этого молча:
+  // webhook может обслуживать другой сервис.
+  if (cfg.maxMode === 'polling') {
+    const subs = await bot.api.getSubscriptions();
+    if (subs.length > 0 && !cfg.dropWebhooks) {
+      console.error(
+        `[max] У бота @${info.username} настроен webhook:\n${subs.map((s) => `   • ${s.url}`).join('\n')}\n` +
+          '[max] В режиме polling он будет удалён, и события перестанут приходить на этот адрес.\n' +
+          '[max] Чтобы продолжить: удалите подписки (npm run webhooks -- delete-all) или задайте MAX_DROP_WEBHOOKS=1 в .env.',
+      );
+      process.exit(2);
+    }
+    if (subs.length > 0) console.warn(`[max] удаляю webhook-подписки: ${subs.map((s) => s.url).join(', ')}`);
+  }
+
   console.log(`[max] bot @${info.username} (${info.user_id}) starting in ${cfg.maxMode} mode`);
   void bot.start(
     cfg.maxMode === 'webhook'

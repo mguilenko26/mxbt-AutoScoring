@@ -8,7 +8,8 @@
     "dev": "tsx --env-file-if-exists=.env scripts/dev.ts",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
-    "check:max": "tsx --env-file-if-exists=.env scripts/check-max.ts"
+    "check:max": "tsx --env-file-if-exists=.env scripts/check-max.ts",
+    "webhooks": "tsx --env-file-if-exists=.env scripts/webhooks.ts"
   },
   "repository": {
     "type": "git",
